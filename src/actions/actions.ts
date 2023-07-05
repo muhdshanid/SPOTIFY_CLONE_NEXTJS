@@ -1,4 +1,4 @@
-import { Song } from "@/types/types";
+import { ProductWithPrice, Song } from "@/types/types";
 import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from 'next/headers'
 
@@ -85,6 +85,26 @@ export const getSongsByTitle = async (title: string): Promise<Song[]> =>
     const {data, error} = await supabase.from("songs")
     .select("*").ilike("title", `%${title}%`)
     .order('created_at',{ascending: false})
+
+    if(error){
+        console.log(error.message);
+        
+    }
+
+    return (data as any || [])
+}
+
+
+export const getActiveProducts = async (): Promise<ProductWithPrice[]> => {
+    
+    const supabase = createServerComponentClient({
+        cookies: cookies
+    })
+
+    const {data, error} = await supabase.from("products")
+    .select("*, prices(*)").eq("active", true).eq("prices.active", true)
+    .order("metadata->index")
+    .order('unit_amount',{foreignTable: 'prices'})
 
     if(error){
         console.log(error.message);
