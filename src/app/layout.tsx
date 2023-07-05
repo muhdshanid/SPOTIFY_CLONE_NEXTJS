@@ -5,7 +5,7 @@ import SupabaseProvider from '@/providers/SupabaseProvider'
 import UserProvider from '@/providers/UserProvider'
 import ModalProvider from '@/providers/ModalProvider'
 import ToastProvider from '@/providers/ToastProvider'
-import { getSongsById } from '@/actions/actions'
+import { getActiveProducts, getSongsById } from '@/actions/actions'
 import { Player } from '@/components/Player'
 
 const font = Figtree({ subsets: ['latin'] })
@@ -22,13 +22,14 @@ export default async function RootLayout({
   children: React.ReactNode
 }) {
   const userSongs = await getSongsById()
+  const products = await getActiveProducts()
   return (
     <html lang="en">
       <body className={font.className}>
         <ToastProvider/>
         <SupabaseProvider>
           <UserProvider>
-            <ModalProvider/>
+            <ModalProvider products={products}/>
         <Sidebar userSongs={userSongs}>
         {children}
         </Sidebar>
